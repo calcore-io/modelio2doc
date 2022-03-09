@@ -1,7 +1,7 @@
 '''
 Created on Mar 7, 2022
 
-@author: carlo
+@author: Carlos Calvillo Cortes
 '''
 
 from attrs import define, Factory

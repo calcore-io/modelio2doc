@@ -1,7 +1,7 @@
 '''
 Created on Mar 8, 2022
 
-@author: carlo
+@author: Carlos Calvillo Cortes
 '''
 
 import pathlib as pl
