@@ -239,51 +239,13 @@ USAGE
         
         print(node)
         
-#         for node in at.PreOrderIter(modelio_obj.model_tree_root, maxlevel=2):
-#             print(node.type,":",node.name)
-#         
-#         print("")
-#         print("")
-#         print("")
-#         
-#         for child in modelio_obj.model_tree_root.children:
-#             print(child.type+":"+child.name)
-#             for child2 in child.children:
-#                 print("    "+child2.type+":"+child2.name)
+        mdparse = mdp.MdParse()
+        mdparse.model_reference = modelio_obj
+        mdparse.load(template_file)
+        mdparse.generate()
         
-#          
-#         for node in at.LevelOrderIter(modelio_obj.model_tree_root,maxlevel=2):
-#             print(node.type,":",node.name)
-#             
-#             for node2 in at.LevelOrderIter(node,maxlevel=2):
-#                 print("    ",node2.type,":",node2.name)
-
-        
-        
-        
-#         md_obj = mdp.MdFile()
-#         
-#         md_obj.load(template_file)
-#         md_obj.generate()
-
-
         
 
-        
-        #print(modelio_obj.data_path)
-
-        
-        
-        
-        
-                
-
-#         if inpat and expat and inpat == expat:
-#             raise CLIError("include and exclude pattern are equal! Nothing will be processed.")
-# 
-#         for inpath in paths:
-#             ### do something with inpath ###
-#             print(inpath)
         return 0
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###
@@ -301,9 +263,8 @@ if __name__ == "__main__":
 #         sys.argv.append("-h")
 #         sys.argv.append("-v")
 #         sys.argv.append("-r")
-        
         sys.argv.append("-t")
-        sys.argv.append("G:\\devproj\\github\\eTlatloc\\Software\\Architecture\\gen_swa\\SWA doc template\\eTlaloc - SWA.md")
+        sys.argv.append("G:\\devproj\\github\\modelio2doc_0_0_1\\modelio2doc\\modelio2doc\\test\\eTlaloc - SWA.md")
         
         sys.argv.append("-mod_path")
         sys.argv.append("G:\\devproj\\github\\eTlatloc\\Software\\modelio_ws\\eTlaloc_SYA\\project.conf")

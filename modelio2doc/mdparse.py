@@ -9,15 +9,81 @@ import pathlib as pl
 import lxml.etree as ET
 import modelio2doc.general as grl
 import re
-
-
+import model
 
 @define
-class MdFile(object):
+class Token(object):
+    
+    name: str = Factory(str)
+    extensions: list[str] = Factory(list)
+    argument: str = Factory(str)
+    model_reference: model.Model = None
+    
+    def resolve(self):
+        return_val = None
+        
+        action = "wrong_token: " + self.argument
+        match self.name:
+            case "set-location":
+                action = "found"
+            case "img":
+                action = "1"
+            case "txt":
+                action = "2"
+            case "attr":
+                action = "3"
+            case "for":
+                action = "4"
+            case "get":
+                action = "5"
+        
+        return_val = action
+        return return_val
+    
+    def _resolve_set_location(self):
+        '''
+            Resolve token of type ""
+        '''
+        return_val = None
+        
+        return return_val
+    
+    def _resolve_get(self):
+        '''
+            Resolve token of type ""
+        '''
+        return_val = None
+        
+        return return_val
+    
+    def _get_description(self):
+        '''
+        '''
+        return_val = None
+        
+        return return_val
+    
+    def _get_image(self):
+        '''
+        '''
+        return_val = None
+        
+        return return_val
+    
+    def _get_attribute(self):
+        '''
+        '''
+        return_val = None
+        
+        return return_val
+
+@define
+class MdParse(object):
     
     _curr_location: str = Factory(str)
     md_file_in: pl.Path = None
     md_file_out: pl.Path = None
+    model_reference: model.Model = None
     
 
     def load(self, md_file_in):
@@ -42,48 +108,57 @@ class MdFile(object):
               
         with open(self.md_file_in, 'r') as md_in:
             for line in md_in:
-                md_out.write(self.parse_line(line))
+                md_out.write(self._parse_line(line))
         
                 
         md_out.close()
         
-    def parse_line(self, line_in):
+    def _parse_line(self, line_in):
         
         line_out = ""
         token_pattern = r'\$\{(.+)\}'
         regex = re.compile(token_pattern)
         
-        line_out = re.sub(regex, self.resolve_token, line_in)
+        line_out = re.sub(regex, self._process_token, line_in)
         
         return line_out
     
-    def resolve_token(self, matchobj):
+    def _process_token(self, matchobj):
+        
+        return_val = matchobj.group(0)
         
         # Get token type
-        token = matchobj.group(1).split(":")
-        token_type = token[0]
+        try:
+            line_split = matchobj.group(1).split(">>")
+            
+            # Create empty Token object
+            token = Token(model_reference = self.model_reference)
+            
+            # Token string is the text left to the ">>"
+            aux_token_str = line_split[0]
+            
+            for i, token_part in enumerate(aux_token_str.split(".")):
+                if i == 0:
+                    # First element is the token name
+                    token.name = token_part
+                else:
+                    # Subsequent elements if present are token extensions
+                    token.extensions.append(token_part)
+ 
+            # Token argument is the text right to the ">>"
+            if len(line_split) > 1:
+                token.argument = line_split[1] 
+            
+        except Exception as e:
+            print('ERROR: Incorrect token found: %s.\n     generated exception: %s ' % (matchobj.group(1), e))
+            return "ERROR: " + matchobj.group(0)
         
-        action = ""
         
-        match token_type:
-            case "set-active-location":
-                loc_owner = token[1]
-                loc_ = token[2]
-                loc_name = token[3]
-                action = loc_owner + ">" + token_type + ">" + loc_name
-            case "img":
-                action = "1"
-            case "txt":
-                action = "2"
-            case "attr":
-                action = "3"
-            case "for":
-                action = "4"
-            case "get":
-                action = "5"
+        resolved_token = token.resolve()
+        if resolved_token is not None:
+            return_val = resolved_token
         
-        
-        return "[" + token_type + "-" + action + "]"
+        return "[" + return_val + "]"
         
     
     
