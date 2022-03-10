@@ -144,6 +144,14 @@ class Model(object):
         
         return return_val
     
+    def set_current_path(self, path_str: str):
+        
+        return_val = False
+        
+        # Check if path is valid
+        element = self.get_element_by_path_str(path_str)
+        
+    
     
     def test(self):
         w = at.Walker()
