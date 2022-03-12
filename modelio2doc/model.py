@@ -30,7 +30,7 @@ class ModelElement(at.NodeMixin):
     
     name: str = Factory(str)
     type: str = Factory(str)
-    uuid: str = Factory(str)
+    _uuid: str = Factory(str)
     owner_uuid: str = Factory(str)
     file: pl.Path = None
     attributes: dict[str,list[ElementAttr]] = Factory(dict) # [name, ElementAttr]
@@ -46,7 +46,7 @@ class NavElement(object):
     name: str = Factory(str)
     type: str = Factory(str)
     type_qualifier: str = Factory(str)
-    uuid: str = Factory(str)
+    _uuid: str = Factory(str)
 
 
 @define
@@ -56,14 +56,14 @@ class Model(object):
     '''
      
     name: str = Factory(str)
-    uuid: str = Factory(str) 
-    data_path: pl.Path = None # project/data/fragments/project_name/model/
-    elements: dict[str, ModelElement] = Factory(dict) # [element_uuid, ModelElement]
-    model_tree_root: ModelElement = Factory(ModelElement)
-    current_path: list[NavElement] = Factory(list)
+    _uuid: str = Factory(str) 
+    _data_path: pl.Path = None # project/data/fragments/project_name/model/
+    _elements: dict[str, ModelElement] = Factory(dict) # [element_uuid, ModelElement]
+    _model_tree_root: ModelElement = Factory(ModelElement)
+    _current_path: list[NavElement] = Factory(list)
     
     
-    def str_to_nav_path(self, path_str: str, ignore_current_path = False):
+    def _str_to_nav_path(self, path_str: str, ignore_current_path = False):
         '''
             Returns a list of NavElement objects from the input path string.
             
@@ -102,12 +102,12 @@ class Model(object):
             
         if ignore_current_path is False:
             # Pre-pend current path
-            nav_path = self.current_path + nav_path
+            nav_path = self._current_path + nav_path
         
         return nav_path
                 
     
-    def find_child_by_nav_element(self, node : ModelElement, nav_element : NavElement):
+    def _find_child_by_nav_element(self, node : ModelElement, nav_element : NavElement):
         
         return_value = None
         
@@ -121,7 +121,7 @@ class Model(object):
         return return_value
         
     
-    def get_element_by_path_str(self, path_str: str, ignore_current_path: bool = False):
+    def _get_element_by_path_str(self, path_str: str, ignore_current_path: bool = False):
         ''' 
             Returns a ModelElement object at the given path string.
         '''
@@ -129,14 +129,14 @@ class Model(object):
         return_val = None
         
         # Convert path string
-        nav_path = self.str_to_nav_path(path_str, ignore_current_path)
+        nav_path = self._str_to_nav_path(path_str, ignore_current_path)
         
         
-        current_node = self.model_tree_root
+        current_node = self._model_tree_root
         
         # Navigate Model to find element
         for nav_element in nav_path:
-            current_node = self.find_child_by_nav_element(current_node, nav_element)
+            current_node = self._find_child_by_nav_element(current_node, nav_element)
             return_val = current_node
             if current_node is None:
                 # Element NOT found, break navigation since path is invalid
@@ -144,62 +144,62 @@ class Model(object):
         
         return return_val
     
-    def set_current_path(self, path_str: str):
+    def _set_current_path(self, path_str: str):
         
         return_val = False
         
         # Check if path is valid
-        element = self.get_element_by_path_str(path_str)
+        element = self._get_element_by_path_str(path_str)
         
     
     
     def test(self):
         w = at.Walker()
-        print(w.walk(self.model_tree_root, self.model_tree_root))
+        print(w.walk(self._model_tree_root, self._model_tree_root))
         
         
         
             
-    def find_childs(self,parent_uuid):
+    def _find_childs(self,parent_uuid):
         
         #at_least_one_child = False
-        for element in self.elements.values():
+        for element in self._elements.values():
             if element.owner_uuid == parent_uuid:
                 # Set parent
-                self.elements[element.uuid].parent = self.elements[parent_uuid]
-                self.find_childs(element.uuid)
+                self._elements[element._uuid].parent = self._elements[parent_uuid]
+                self._find_childs(element._uuid)
         
         #return at_least_one_child
                 
     
-    def build_model_tree(self):
+    def _build_model_tree(self):
         
         # Set Root (project element)
         project_uuid = self.get_project_uuid()
-        self.elements[project_uuid].parent = None
+        self._elements[project_uuid].parent = None
         
-        self.model_tree_root = self.elements[project_uuid]
+        self._model_tree_root = self._elements[project_uuid]
         
         
-        self.find_childs(project_uuid)
+        self._find_childs(project_uuid)
         
     def print_tree(self):
-        print(at.RenderTree(self.model_tree_root))
+        print(at.RenderTree(self._model_tree_root))
                 
 
     
-    def load_standard_elements(self, element_type = None):
+    def _load_standard_elements(self, element_type = None):
         '''
-            Load standard elements to model object.
+            Load standard _elements to model object.
             
-            Load standard elements matching the 'element_type'.
+            Load standard _elements matching the 'element_type'.
         '''
         
         if element_type is None:
             element_type = "standard"
         
-        if grl.folder_exists(self.data_path):
-            for folder in self.data_path.glob(element_type+'.*'):
+        if grl.folder_exists(self._data_path):
+            for folder in self._data_path.glob(element_type+'.*'):
                 print(folder.name)
                 splitted_str = str(folder.name).split(".")
                 for exml_file in folder.glob('*.exml'):
@@ -226,7 +226,7 @@ class Model(object):
                             element_obj.type = el_type
                         
                         if element.get("uid") is not None:
-                            element_obj.uuid = element.get("uid")
+                            element_obj._uuid = element.get("uid")
                     
                     # Get owner
                     element = el_root.find("OBJECT/PID")
@@ -246,28 +246,35 @@ class Model(object):
                             # Append attribute to element
                             element_obj.attributes.update({attribute_obj.name:attribute_obj})
                     
-                    self.elements.update({element_obj.uuid:element_obj})
+                    self._elements.update({element_obj._uuid:element_obj})
                     print("    ",element_obj.name)
     
     
     def get_project_uuid(self, default=None):
         return_val = default
         
-        for element in self.elements.values():
+        for element in self._elements.values():
             if element.type == "Project": #Access element object
-                return_val = element.uuid
+                return_val = element._uuid
                 break
         
         return return_val
     
         
-    def load_project_uuid(self):
+    def _load_project_uuid(self):
         '''
         '''
-        self.uuid = self.get_project_uuid()
+        self._uuid = self.get_project_uuid()
 
             
-    def get_uuid(self, owner_type, owner_name, element_type, element_name):
+    def _get_uuid(self, owner_type, owner_name, element_type, element_name):
         
        pass
+   
+    def load(self, project_data_path):
+        
+        self._data_path = grl.string_to_path(str(project_data_path))
+        self._load_standard_elements()
+        self._load_project_uuid()
+        self._build_model_tree()
             

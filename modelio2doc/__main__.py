@@ -223,10 +223,6 @@ USAGE
         if template_file == output_full_file:
             logging.error("Output file shall not be the same as the Input Template file")
             return 2
-  
-        print("output_full_file: ", output_full_file)
-        
-        return 0
         
         # Check modelio project path
         model_file = string_to_path(model_path)
@@ -256,33 +252,20 @@ USAGE
             return 2
         
         # --------- Create Modelio Model Class
-        modelio_el = mdl.ModelElement()
-        modelio_attr = mdl.ElementAttr()
-        
-        
-        
         modelio_obj = mdl.Model()
-        modelio_obj.data_path = project_data_path
-        modelio_obj.load_standard_elements()
-        modelio_obj.load_project_uuid()
-        modelio_obj.build_model_tree()
-        
+        modelio_obj.load(project_data_path)
         modelio_obj.print_tree()
         
         print("")
         print("")
         print("")
         
-        node = modelio_obj.get_element_by_path_str("Package:etlaloc_sya/Package:pkg_EEA")
+        node = modelio_obj._get_element_by_path_str("Package:etlaloc_sya/Package:pkg_EEA")
         
         print(node)
         
         mdparse = mdp.MdParse()
-        mdparse.model_reference = modelio_obj
-        mdparse.load(template_file)
-        mdparse.generate()
-        
-        
+        mdparse.generate(modelio_obj,template_file,output_full_file)
 
         return 0
     except KeyboardInterrupt:

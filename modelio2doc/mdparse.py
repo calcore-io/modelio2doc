@@ -17,7 +17,7 @@ class Token(object):
     name: str = Factory(str)
     extensions: list[str] = Factory(list)
     argument: str = Factory(str)
-    model_reference: model.Model = None
+    _model_reference: model.Model = None
     
     def resolve(self):
         return_val = None
@@ -81,32 +81,41 @@ class Token(object):
 class MdParse(object):
     
     _curr_location: str = Factory(str)
-    md_file_in: pl.Path = None
-    md_file_out: pl.Path = None
-    model_reference: model.Model = None
+    _md_file_in: pl.Path = None
+    _md_file_out: pl.Path = None
+    _model_reference: model.Model = None
     
 
     def load(self, md_file_in):
         md_file_in = grl.string_to_path(str(md_file_in))
         
         if grl.file_exists(md_file_in):
-            self.md_file_in = md_file_in
+            self._md_file_in = md_file_in
             
     
-    def generate(self, md_file_out = None):
+    def generate(self, model_ref: model.Model, md_file_in, md_file_out = None):
+        
+        # Set model reference
+        self._model_reference = model_ref
+        
+        # Check input file
+        md_file_in = grl.string_to_path(str(md_file_in))
+        
+        if grl.file_exists(md_file_in):
+            self._md_file_in = md_file_in
+        else:
+            logging.error("Input file doesn't exists.")
         
         if md_file_out is None:
-            in_file_name = self.md_file_in.stem
-            md_file_out = self.md_file_in.with_name('out_'+in_file_name+self.md_file_in.suffix)
-        
-        print(md_file_out)
+            in_file_name = self._md_file_in.stem
+            md_file_out = self._md_file_in.with_name('out_'+in_file_name+self._md_file_in.suffix)
         
         if grl.file_exists(md_file_out):
             grl.delete_file(md_file_out)
         
         md_out = open(md_file_out, 'w')
               
-        with open(self.md_file_in, 'r') as md_in:
+        with open(self._md_file_in, 'r') as md_in:
             for line in md_in:
                 md_out.write(self._parse_line(line))
         
@@ -132,7 +141,7 @@ class MdParse(object):
             line_split = matchobj.group(1).split(">>")
             
             # Create empty Token object
-            token = Token(model_reference = self.model_reference)
+            token = Token(model_reference = self._model_reference)
             
             # Token string is the text left to the ">>"
             aux_token_str = line_split[0]
