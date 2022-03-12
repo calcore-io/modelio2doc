@@ -22,6 +22,7 @@ import os
 import pathlib as pl
 import lxml.etree as ET
 import anytree as at
+import logging
 
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
@@ -158,6 +159,9 @@ USAGE
 #                 print("Recursive mode off")
                 
         # ------- Dynamic imports
+        #logging.basicConfig(level=logging.DEBUG)
+        
+        
         modelio2doc_path = pl.Path(__file__).parent.absolute()
         try:
             import modelio2doc.model as mdl
@@ -189,6 +193,40 @@ USAGE
         if not file_exists(template_file):
             print("ERROR: Input template file not found.")
             return 2
+        
+        # Check provided output path/file
+        if output is None:
+            # User didn't provide an output. Use same path as input and same file name but
+            # with an "out_" suffix.
+            # Assume same output path as the input template
+            output_full_file = template_file.with_name('out_'+template_file.name)
+        else:
+            # Check if provided argument is a file or a folder..
+            output_path = string_to_path(output)
+            if output_path.suffix != "":
+                # Provided path seems like a file.
+                output_full_file = output_path
+            else: 
+                # Provided argument seems like a folder. Check if it exists.
+                if folder_exists(output_path):
+                    # Provided argument is a folder. For file name use the same as the input
+                    # file but with an "out_" suffix.
+                    output_file = template_file.with_name('out_'+template_file.name)
+                    output_file = output_file.name
+                    output_full_file = output_path / output_file
+                else:
+                    # Invalid folder
+                    logging.error("Provided output path not found.")
+                    return 2
+        
+        # Output file shall not be the same as the input file
+        if template_file == output_full_file:
+            logging.error("Output file shall not be the same as the Input Template file")
+            return 2
+  
+        print("output_full_file: ", output_full_file)
+        
+        return 0
         
         # Check modelio project path
         model_file = string_to_path(model_path)
@@ -265,6 +303,10 @@ if __name__ == "__main__":
 #         sys.argv.append("-r")
         sys.argv.append("-t")
         sys.argv.append("G:\\devproj\\github\\modelio2doc_0_0_1\\modelio2doc\\modelio2doc\\test\\eTlaloc - SWA.md")
+        
+        #sys.argv.append("-o")
+        #sys.argv.append("G:\\devproj\\github\\modelio2doc_0_0_1\\modelio2doc\\modelio2doc\\test\\jejeje_eTlaloc - SWA.md")
+        #sys.argv.append("G:\\devproj\\github\\modelio2doc_0_0_1\\modelio2doc")
         
         sys.argv.append("-mod_path")
         sys.argv.append("G:\\devproj\\github\\eTlatloc\\Software\\modelio_ws\\eTlaloc_SYA\\project.conf")
