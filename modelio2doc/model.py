@@ -30,7 +30,7 @@ class ModelElement(at.NodeMixin):
     
     name: str = Factory(str)
     type: str = Factory(str)
-    _uuid: str = Factory(str)
+    uuid: str = Factory(str)
     owner_uuid: str = Factory(str)
     file: pl.Path = None
     attributes: dict[str,list[ElementAttr]] = Factory(dict) # [name, ElementAttr]
@@ -46,7 +46,7 @@ class NavElement(object):
     name: str = Factory(str)
     type: str = Factory(str)
     type_qualifier: str = Factory(str)
-    _uuid: str = Factory(str)
+    uuid: str = Factory(str)
 
 
 @define
@@ -166,8 +166,8 @@ class Model(object):
         for element in self._elements.values():
             if element.owner_uuid == parent_uuid:
                 # Set parent
-                self._elements[element._uuid].parent = self._elements[parent_uuid]
-                self._find_childs(element._uuid)
+                self._elements[element.uuid].parent = self._elements[parent_uuid]
+                self._find_childs(element.uuid)
         
         #return at_least_one_child
                 
@@ -226,7 +226,7 @@ class Model(object):
                             element_obj.type = el_type
                         
                         if element.get("uid") is not None:
-                            element_obj._uuid = element.get("uid")
+                            element_obj.uuid = element.get("uid")
                     
                     # Get owner
                     element = el_root.find("OBJECT/PID")
@@ -246,7 +246,7 @@ class Model(object):
                             # Append attribute to element
                             element_obj.attributes.update({attribute_obj.name:attribute_obj})
                     
-                    self._elements.update({element_obj._uuid:element_obj})
+                    self._elements.update({element_obj.uuid:element_obj})
                     print("    ",element_obj.name)
     
     
@@ -255,7 +255,7 @@ class Model(object):
         
         for element in self._elements.values():
             if element.type == "Project": #Access element object
-                return_val = element._uuid
+                return_val = element.uuid
                 break
         
         return return_val
