@@ -42,14 +42,6 @@ class Token(object):
                     logging.info("Current path cleared.")
                     action = "Clear path"
 
-            case "img":
-                action = "1"
-            case "txt":
-                action = "2"
-            case "attr":
-                action = "3"
-            case "for":
-                action = "4"
             case "get":
                 action = self._resolve_get()
                 
@@ -71,19 +63,17 @@ class Token(object):
         '''
         return_val = None
         
-        action = "ERROR"
+        action = "ERROR -GET-"
         
         if len(self.extensions) == 0:
             logging.error("Missing extensions for 'get'")
             action = "Wrong extension"
         else:
-            # Execute proper argument
-            match self.extensions[0]:
-                case "image":
-                    print("Image argument: ", self.argument)
-#                             element = 
-                    element = self._model_reference._get_element_by_path_str(self.argument)
-                    if element is not None: 
+            element = self._model_reference._get_element_by_path_str(self.argument)
+            if element is not None: 
+                # Execute proper argument
+                match self.extensions[0]:
+                    case "image":
                         el_value = None
                         if "PreviewData" in element.attributes:
                             el_value = element.attributes["PreviewData"]
@@ -119,13 +109,21 @@ class Token(object):
                                 
                                 # Print markdown line to insert image
                                 action = "![]("+str(out_file_path)+")"
-                
-                case "name":
-                    element = self._model_reference._get_element_by_path_str(self.argument)
-                    if element is not None:
+                    
+                    case "name":
                         action = element.name
-                    else:
-                        logging.error("Element not found.")
+                    
+                    case "desc":
+                        action = element.desc
+                    
+                    case "attr":
+                        if self.extensions[1] in element.attributes:
+                            action = element.attributes[self.extensions[1]]
+                        else:
+                            action = "Attribute not found."
+                            logging.error("Attribute not found.")
+            else:
+                logging.error("Element not found.")
             
         return_val = action
         return return_val

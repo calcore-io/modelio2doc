@@ -10,7 +10,10 @@ wrong_token:
 
 wrong_token:  diagram, type, name
 
-2 type: name, description
+wrong_token: :type:location:elementName type: name, description
+
+Description: <p>Some UCD diagram description.</p><p>Some other paragraph</p>
+
 
 ![](G:\devproj\github\modelio2doc_0_0_1\modelio2doc\modelio2doc\test\img\961ca4c4-2d97-4ef1-b410-0f085431c990.png)
 

@@ -12,6 +12,8 @@ ${img:type:location:elementName} diagram, type, name
 
 ${txt>>:type:location:elementName} type: name, description
 
+Description: ${get.desc>>etlaloc_sya/pkg_SYA/SYA_UseCases/ucd_actors}
+
 ${get.image>>etlaloc_sya/pkg_SYA/SYA_UseCases/ucd_actors}
 
 Figure "${get.name>>etlaloc_sya/pkg_SYA/SYA_UseCases/ucd_actors}"

@@ -34,6 +34,7 @@ class ModelElement(at.NodeMixin):
     type: str = Factory(str)
     uuid: str = Factory(str)
     owner_uuid: str = Factory(str)
+    desc: str = Factory(str)
     file: pl.Path = None
     attributes: dict[str,list[ElementAttr]] = Factory(dict) # [name, ElementAttr]
     
@@ -288,6 +289,13 @@ class Model(object):
                             
                             # Append attribute to element
                             element_obj.attributes.update({attribute_obj.name:attribute_obj})
+                    
+                    # Get description data
+                    desc = el_root.xpath("//OBJECT/DEPENDENCIES/COMP[@relation='Descriptor']/OBJECT/ID[@mc='Infrastructure.Note']")
+                    if desc:
+                        desc = desc[0].xpath("../ATTRIBUTES/ATT[@name='Content']/text()")
+                        if desc is not None:
+                            element_obj.desc = ''.join(desc)
                     
                     self._elements.update({element_obj.uuid:element_obj})
                     print("    ",element_obj.name)
