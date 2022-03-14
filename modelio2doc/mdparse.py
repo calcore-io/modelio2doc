@@ -10,6 +10,8 @@ import lxml.etree as ET
 import modelio2doc.general as grl
 import re
 import model
+import logging
+import base64
 
 @define
 class Token(object):
@@ -18,14 +20,28 @@ class Token(object):
     extensions: list[str] = Factory(list)
     argument: str = Factory(str)
     _model_reference: model.Model = None
+    output_path: pl.Path = Factory(pl.Path)
     
     def resolve(self):
         return_val = None
         
+        print("self.name: ", self.name)
+        print("self.argument: ", self.argument)
+        
         action = "wrong_token: " + self.argument
         match self.name:
             case "set-location":
-                action = "found"
+                # Argument is required
+                if self.argument != "":
+                    loc_result = self._model_reference.set_current_path(self.argument)
+                    if loc_result is None:
+                        logging.error("Wrong location argument for 'set-location'.")
+                        action = "Wrong location"     
+                else:
+                    self._model_reference.clear_current_path()
+                    logging.info("Current path cleared.")
+                    action = "Clear path"
+
             case "img":
                 action = "1"
             case "txt":
@@ -35,7 +51,8 @@ class Token(object):
             case "for":
                 action = "4"
             case "get":
-                action = "5"
+                action = self._resolve_get()
+                
         
         return_val = action
         return return_val
@@ -54,6 +71,63 @@ class Token(object):
         '''
         return_val = None
         
+        action = "ERROR"
+        
+        if len(self.extensions) == 0:
+            logging.error("Missing extensions for 'get'")
+            action = "Wrong extension"
+        else:
+            # Execute proper argument
+            match self.extensions[0]:
+                case "image":
+                    print("Image argument: ", self.argument)
+#                             element = 
+                    element = self._model_reference._get_element_by_path_str(self.argument)
+                    if element is not None: 
+                        el_value = None
+                        if "PreviewData" in element.attributes:
+                            el_value = element.attributes["PreviewData"]
+                        if el_value is None:
+                            action = "Wrong image element"
+                        else:
+                            print(el_value.value)
+                            re_image = r'data:image/(.+);(.+),(.+)'
+                            regex = re.compile(re_image)
+                            match = re.findall(regex, el_value.value)
+                            
+                            extension = match[0][0]
+                            decode_str = match[0][1]
+                            data = match[0][2]
+                            
+                            if extension is not None \
+                            and decode_str is not None \
+                            and data is not None:
+                            
+                                if decode_str != "base64":
+                                    logging.warning("Image is not coded in base64")
+                                    
+                                img_data = base64.b64decode(data)
+                                #Generate image file:
+                                out_path = self.output_path / "img"
+                                if grl.folder_exists(out_path) is False:
+                                    print("Creating: ", out_path)
+                                    grl.create_folder(out_path)
+                                
+                                out_file_path = out_path / ( element.uuid + ".png" )
+                                with open(out_file_path, 'wb') as fh:
+                                    fh.write(img_data)
+                                
+                                # Print markdown line to insert image
+                                action = "![]("+str(out_file_path)+")"
+                
+                case "name":
+                    element = self._model_reference._get_element_by_path_str(self.argument)
+                    if element is not None:
+                        action = element.name
+                    else:
+                        logging.error("Element not found.")
+            
+        return_val = action
         return return_val
     
     def _get_description(self):
@@ -83,6 +157,7 @@ class MdParse(object):
     _curr_location: str = Factory(str)
     _md_file_in: pl.Path = None
     _md_file_out: pl.Path = None
+    _md_file_put_path: pl.Path = None
     _model_reference: model.Model = None
     
 
@@ -109,6 +184,8 @@ class MdParse(object):
         if md_file_out is None:
             in_file_name = self._md_file_in.stem
             md_file_out = self._md_file_in.with_name('out_'+in_file_name+self._md_file_in.suffix)
+            
+        self._md_file_put_path = md_file_out.parent.absolute()
         
         if grl.file_exists(md_file_out):
             grl.delete_file(md_file_out)
@@ -142,6 +219,7 @@ class MdParse(object):
             
             # Create empty Token object
             token = Token(model_reference = self._model_reference)
+            token.output_path = self._md_file_put_path
             
             # Token string is the text left to the ">>"
             aux_token_str = line_split[0]
@@ -167,7 +245,7 @@ class MdParse(object):
         if resolved_token is not None:
             return_val = resolved_token
         
-        return "[" + return_val + "]"
+        return return_val
         
     
     

@@ -2,7 +2,7 @@
 
 Some text
 
-## Some level 2 heading ${set-location}
+## Some level 2 heading ${set-location>>n}
 
 Some more text. Some attached image below.
 
@@ -12,9 +12,9 @@ ${img:type:location:elementName} diagram, type, name
 
 ${txt>>:type:location:elementName} type: name, description
 
-${attr::type:location:elementName}
+${get.image>>etlaloc_sya/pkg_SYA/SYA_UseCases/ucd_actors}
 
-
+Figure "${get.name>>etlaloc_sya/pkg_SYA/SYA_UseCases/ucd_actors}"
 
 name:type.name:type:name:type:name:type
 
