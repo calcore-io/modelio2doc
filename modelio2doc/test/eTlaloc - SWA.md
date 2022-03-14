@@ -18,6 +18,14 @@ ${get.image>>etlaloc_sya/pkg_SYA/SYA_UseCases/ucd_actors}
 
 Figure "${get.name>>etlaloc_sya/pkg_SYA/SYA_UseCases/ucd_actors}"
 
+
+
+-------------------------
+
+${set-location>>etlaloc_sya/pkg_SYA/SYA_UseCases/ucd_actors}${get.image}
+
+
+
 name:type.name:type:name:type:name:type
 
 ${for:type==>element}

@@ -260,7 +260,7 @@ USAGE
         print("")
         print("c")
         
-        node = modelio_obj._get_element_by_path_str("Package:etlaloc_sya/Package:pkg_EEA")
+        node = modelio_obj.get_element_by_path_str("Package:etlaloc_sya/Package:pkg_EEA")
         
         print(node)
         

@@ -124,13 +124,17 @@ class Model(object):
         return return_value
         
     
-    def _get_element_by_path_str(self, path_str: str):
+    def get_element_by_path_str(self, path_str: str = None):
         ''' 
             Returns a ModelElement object at the given path string.
         '''
         
         # Convert path string
-        nav_path = self._str_to_nav_path(path_str)
+        if path_str is not None:
+            nav_path = self._str_to_nav_path(path_str)
+            nav_path = self._current_path + nav_path
+        else:
+            nav_path = self._current_path
 
         return self._get_element_by_path(nav_path)
 
@@ -146,13 +150,10 @@ class Model(object):
             current_node = self._find_child_by_nav_element(current_node, nav_element)
             return_val = current_node
             if current_node is None:
+                print("NOT F: ", current_node, " ...... ", nav_element)
                 # Element NOT found, break navigation since path is invalid
                 logging.error("Provided element not found.")
                 break
-        
-        # pre-pend current location
-        if return_val is not None:
-            nav_path = self._current_path + nav_path
         
         return return_val
         
@@ -163,6 +164,8 @@ class Model(object):
         
         # Check if path is valid
         nav_path = self._str_to_nav_path(path_str)
+        
+        print(nav_path)
         
         element = self._get_element_by_path(nav_path)
         if element is not None:
@@ -326,11 +329,8 @@ class Model(object):
         
         return_val = None
         
-        if path_str is not None:
-            element = self._get_element_by_path_str(path_str)
-        else:
-            element = self._current_element
-            
+        element = self.get_element_by_path_str(path_str)
+          
         if element is not None:
             uuid = element.uuid
             return_val = self._elements[uuid].attributes[attr_name]

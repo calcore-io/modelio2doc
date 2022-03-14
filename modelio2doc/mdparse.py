@@ -31,16 +31,19 @@ class Token(object):
         action = "wrong_token: " + self.argument
         match self.name:
             case "set-location":
+                print("### SET-LOCATION")
                 # Argument is required
                 if self.argument != "":
                     loc_result = self._model_reference.set_current_path(self.argument)
-                    if loc_result is None:
+                    if loc_result is not None:
+                        action = "" 
+                    else:
                         logging.error("Wrong location argument for 'set-location'.")
                         action = "Wrong location"     
                 else:
                     self._model_reference.clear_current_path()
                     logging.info("Current path cleared.")
-                    action = "Clear path"
+                    action = ""
 
             case "get":
                 action = self._resolve_get()
@@ -69,7 +72,13 @@ class Token(object):
             logging.error("Missing extensions for 'get'")
             action = "Wrong extension"
         else:
-            element = self._model_reference._get_element_by_path_str(self.argument)
+            # Argument is an optional relative path. If not provided, do not pass the path
+            # to the get element function.
+            if self.argument != "":
+                element = self._model_reference.get_element_by_path_str(self.argument)
+            else:
+                element = self._model_reference.get_element_by_path_str()
+                
             if element is not None: 
                 # Execute proper argument
                 match self.extensions[0]:
@@ -200,7 +209,7 @@ class MdParse(object):
     def _parse_line(self, line_in):
         
         line_out = ""
-        token_pattern = r'\$\{(.+)\}'
+        token_pattern = r'\$\{(.+?)\}'
         regex = re.compile(token_pattern)
         
         line_out = re.sub(regex, self._process_token, line_in)
