@@ -44,6 +44,10 @@ class Token(object):
                     self._model_reference.clear_current_path()
                     logging.info("Current path cleared.")
                     action = ""
+            
+            case "clear-location":
+                self._model_reference.clear_current_path()
+                action = ""
 
             case "get":
                 action = self._resolve_get()
