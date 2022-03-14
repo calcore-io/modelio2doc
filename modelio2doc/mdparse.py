@@ -93,35 +93,42 @@ class Token(object):
                         if el_value is None:
                             action = "Wrong image element"
                         else:
-                            print(el_value.value)
-                            re_image = r'data:image/(.+);(.+),(.+)'
-                            regex = re.compile(re_image)
-                            match = re.findall(regex, el_value.value)
-                            
-                            extension = match[0][0]
-                            decode_str = match[0][1]
-                            data = match[0][2]
-                            
-                            if extension is not None \
-                            and decode_str is not None \
-                            and data is not None:
-                            
-                                if decode_str != "base64":
-                                    logging.warning("Image is not coded in base64")
-                                    
-                                img_data = base64.b64decode(data)
-                                #Generate image file:
-                                out_path = self.output_path / "img"
-                                if grl.folder_exists(out_path) is False:
-                                    print("Creating: ", out_path)
-                                    grl.create_folder(out_path)
-                                
-                                out_file_path = out_path / ( element.uuid + ".png" )
-                                with open(out_file_path, 'wb') as fh:
-                                    fh.write(img_data)
-                                
-                                # Print markdown line to insert image
+                            # Check if image already exists
+                            out_path = self.output_path / "img"
+                            out_file_path = out_path / ( element.uuid + ".png" )
+                            if grl.file_exists(out_file_path):
                                 action = "![]("+str(out_file_path)+")"
+                                print("--- --- --- IMG already exists!")
+                            else:
+                                re_image = r'data:image/(.+);(.+),(.+)'
+                                regex = re.compile(re_image)
+                                match = re.findall(regex, el_value.value)
+                                
+                                extension = match[0][0]
+                                decode_str = match[0][1]
+                                data = match[0][2]
+                                
+                                if extension is not None \
+                                and decode_str is not None \
+                                and data is not None:
+                                
+                                    if decode_str != "base64":
+                                        logging.warning("Image is not coded in base64")
+                                        
+                                    img_data = base64.b64decode(data)
+                                    #Generate image file:
+                                    if grl.folder_exists(out_path) is False:
+                                        print("Creating: ", out_path)
+                                        grl.create_folder(out_path)
+                                    
+                                    with open(out_file_path, 'wb') as fh:
+                                        fh.write(img_data)
+                                    
+                                    # Print markdown line to insert image
+                                    action = "![]("+str(out_file_path)+")"
+                                else:
+                                    logging.error("Wrong image data.")
+                                    action = "IMG ERROR"
                     
                     case "name":
                         action = element.name
@@ -191,6 +198,7 @@ class MdParse(object):
             self._md_file_in = md_file_in
         else:
             logging.error("Input file doesn't exists.")
+            return
         
         if md_file_out is None:
             in_file_name = self._md_file_in.stem
@@ -200,6 +208,10 @@ class MdParse(object):
         
         if grl.file_exists(md_file_out):
             grl.delete_file(md_file_out)
+        
+        img_out_path = self._md_file_put_path / "img"
+        if grl.folder_exists(img_out_path):
+            grl.delete_folder_contents(img_out_path)
         
         md_out = open(md_file_out, 'w')
               

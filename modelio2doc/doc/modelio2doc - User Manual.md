@@ -1,12 +1,14 @@
 # modelio2doc
 
+[TOC]
+
 # Overview
 
 Tool for aiding the generation of documentation from a Modelio project.
 
-The user creates an input template document with some "tokens" that refer to Modelio elements. Modelio2doc will "parse" this document and will replace the tokens so that a final document is generated. 
+The user creates an input template document with some "tokens" that operate over Modelio elements. Modelio2doc will "parse" this document and will resolve the tokens so that a final document is generated. 
 
-Current implementation constrains:
+Current implementation:
 
 - Only markdown input/output format supported
 - Only simple token-replacement supported
@@ -54,7 +56,7 @@ Each *element_specification* follows the syntax in section "Element specificatio
 
 A command within modelio2doc follows the next syntax:
 
-${cmd_name*.cmd_extension1.cmd_ext2. ... .cmd_extN*>>*location_specification*}
+${cmd_name*.cmd_extension1.cmd_extension2. ... .cmd_extensionN*>>*location_specification*}
 
 [mandatory] **cmd_name**: Name of the command
 
@@ -62,7 +64,7 @@ ${cmd_name*.cmd_extension1.cmd_ext2. ... .cmd_extN*>>*location_specification*}
 
 [optional] **>>**: command separator which is optional
 
-[optional] ***location_specification***: an optional location specification for the model element to operate with. If not provided, the command will operate (if applicable) over the "current location" which is defined with the "set-location" command.     
+[optional] ***location_specification***: an optional location specification for the model element to operate with. If not provided, the command will operate (if applicable) over the "current location" which is set by the command "set-location".     
 
 ## Commands Syntax
 
@@ -72,7 +74,7 @@ This command is used to set the current model location. Following commands will 
 
 The syntax is:
 
-${set-location>>location_specification}
+${set-location>>*location_specification*}
 
 [mandatory] location_specification: shall be path to an existing model element (of any defined type).
 

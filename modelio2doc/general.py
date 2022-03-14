@@ -6,6 +6,8 @@ Created on Mar 8, 2022
 
 import pathlib as pl
 import os
+import logging
+import shutil
 
 
 def string_to_path(path_string):
@@ -64,7 +66,7 @@ def delete_folder_contents(folder):
                 elif os.path.isdir(file_path):
                     delete_folder_contents(file_path)
                     shutil.rmtree(file_path)
-                    log_debug('Deleted element %s' % file_path)
+                    logging.debug('Deleted element %s' % file_path)
             except Exception as e:
                 print('Failed to delete folder %s. Reason: %s' % (file_path, e))
                 
