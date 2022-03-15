@@ -91,7 +91,8 @@ class Token(object):
                         else:
                             # Check if image already exists
                             out_path = self.output_path / "img"
-                            out_file_path = out_path / ( element.uuid + ".png" )
+                            out_file = element.uuid + ".png"
+                            out_file_path = out_path / out_file
                             if grl.file_exists(out_file_path):
                                 action = "![]("+str(out_file_path)+")"
                                 print("--- --- --- IMG already exists!")
@@ -121,7 +122,7 @@ class Token(object):
                                         fh.write(img_data)
                                     
                                     # Print markdown line to insert image
-                                    action = "![]("+str(out_file_path)+")"
+                                    action = "![]("+"img/"+str(out_file)+")"
                                 else:
                                     logging.error("Wrong image data.")
                                     action = "IMG ERROR"
