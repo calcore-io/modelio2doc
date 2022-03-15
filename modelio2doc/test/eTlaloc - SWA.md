@@ -22,7 +22,13 @@ Figure "${get.name>>etlaloc_sya/pkg_SYA/SYA_UseCases/ucd_actors}"
 
 -------------------------
 
-${set-location>>etlaloc_sya/pkg_SYA/SYA_UseCases/ucd_actors}${get.image}
+sjj
+
+${set-location>>etlaloc_sya/pkg_SYA/SYA_UseCases/ucd_actors}  
+
+${get.image}
+
+${get.desc}
 
 ${get.desc}
 

@@ -21,7 +21,6 @@ import sys
 import os
 import pathlib as pl
 import lxml.etree as ET
-import anytree as at
 import logging
 
 from argparse import ArgumentParser
@@ -109,18 +108,23 @@ def main(argv=None): # IGNORE:C0111
     program_version_message = '%%(prog)s %s (%s)' % (program_version, program_build_date)
     program_shortdesc = __import__('__main__').__doc__.split("\n")[1]
     program_license = '''%s
+Copyright (C) 2022  Carlos Calvillo
+  
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+ 
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.  
 
-  Created by user_name on %s.
-  Copyright 2022 organization_name. All rights reserved.
-
-  Licensed under the Apache License 2.0
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Distributed on an "AS IS" basis without warranties
-  or conditions of any kind, either express or implied.
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 USAGE
-''' % (program_shortdesc, str(__date__))
+''' % program_shortdesc
 
     try:
         # Setup argument parser

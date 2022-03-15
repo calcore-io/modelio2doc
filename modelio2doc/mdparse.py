@@ -3,11 +3,11 @@ Created on Mar 8, 2022
 
 @author: Carlos Calvillo Cortes
 '''
-
+import canmatrix
 from attrs import define, Factory
 import pathlib as pl
 import lxml.etree as ET
-import modelio2doc.general as grl
+import general as grl
 import re
 import model
 import logging
@@ -25,13 +25,9 @@ class Token(object):
     def resolve(self):
         return_val = None
         
-        print("self.name: ", self.name)
-        print("self.argument: ", self.argument)
-        
         action = "wrong_token: " + self.argument
         match self.name:
             case "set-location":
-                print("### SET-LOCATION")
                 # Argument is required
                 if self.argument != "":
                     loc_result = self._model_reference.set_current_path(self.argument)
@@ -235,6 +231,7 @@ class MdParse(object):
     def _process_token(self, matchobj):
         
         return_val = matchobj.group(0)
+
         
         # Get token type
         try:

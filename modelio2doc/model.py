@@ -7,7 +7,7 @@ Created on Mar 7, 2022
 from attrs import define, Factory
 import pathlib as pl
 import lxml.etree as ET
-import modelio2doc.general as grl
+import general as grl
 import anytree as at
 import logging
 from email._header_value_parser import get_attribute
@@ -15,7 +15,9 @@ from email._header_value_parser import get_attribute
 
 @define
 class ElementAttr(object):
-    
+    '''
+    Models an Element attribute.
+    '''
     name: str = Factory(str)
     value: str = Factory(str)
     value_type: str = Factory(str)
@@ -29,6 +31,9 @@ class ElementAttr(object):
 
 @define
 class ModelElement(at.NodeMixin):
+    '''
+    Models a Modelio model element.
+    '''
     
     name: str = Factory(str)
     type: str = Factory(str)
@@ -45,6 +50,9 @@ class ModelElement(at.NodeMixin):
 
 @define
 class NavElement(object):
+    '''
+    Models a navigation element.
+    '''
     
     name: str = Factory(str)
     type: str = Factory(str)
@@ -199,12 +207,7 @@ class Model(object):
             self._current_element = element
         else:
             logging.debug("Element not found.")
-    
-    def test(self):
-        w = at.Walker()
-        print(w.walk(self._model_tree_root, self._model_tree_root))
-        
-        
+
         
             
     def _find_childs(self,parent_uuid):
