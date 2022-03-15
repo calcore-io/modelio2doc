@@ -258,15 +258,6 @@ USAGE
         # --------- Create Modelio Model Class
         modelio_obj = mdl.Model()
         modelio_obj.load(project_data_path)
-        modelio_obj.print_tree()
-        
-        print("")
-        print("")
-        print("c")
-        
-        node = modelio_obj.get_element_by_path_str("Package:etlaloc_sya/Package:pkg_EEA")
-        
-        print(node)
         
         mdparse = mdp.MdParse()
         mdparse.generate(modelio_obj,template_file,output_full_file)

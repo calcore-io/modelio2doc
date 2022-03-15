@@ -1,63 +1,53 @@
-# Some Level 1 heading
+# eTlaloc SW Architecture
 
-Some text
+[TOC]
 
-## Some level 2 heading 
+## Use Case Analysis
 
-Some more text. Some attached image below.
+### Actors
 
-wrong_token: 
+Figure below represents the relation among the different actors participating in the eTlaloc system. Table below provides a description for each of them.
 
-wrong_token:  diagram, type, name
+![](G:\devproj\github\modelio2doc_0_0_1\modelio2doc\modelio2doc\test\img\961ca4c4-2d97-4ef1-b410-0f085431c990.png) 
 
-wrong_token: :type:location:elementName type: name, description
-
-Description: Some UCD diagram description.
-Some other paragraph with **bold** text.
-
-
-![](G:\devproj\github\modelio2doc_0_0_1\modelio2doc\modelio2doc\test\img\961ca4c4-2d97-4ef1-b410-0f085431c990.png)
-
-Figure "ucd_actors"
+*Figure 'ucd_actors'*
 
 
 
--------------------------
+| Actor name              | Description             |
+| ----------------------- | ----------------------- |
+| Master     |      |
+| Developer  | The 'Developer' actor represents a SW developer for the eTlaloc system.  |
+| Technician | The 'Technician' actor is the person that can perform maintenance to the water shop. |
+| Owner      | The 'Owner' actor is the person that owns the water shop.      |
+|                         |                         |
 
-sjj
+### Use Case Diagrams
 
-  
-
-![](G:\devproj\github\modelio2doc_0_0_1\modelio2doc\modelio2doc\test\img\961ca4c4-2d97-4ef1-b410-0f085431c990.png)
-
-Some UCD diagram description.
-Some other paragraph with **bold** text.
-
-
-Some UCD diagram description.
-Some other paragraph with **bold** text.
+#### Diagram 'ucd_top_Consumer'
 
 
 
+![](G:\devproj\github\modelio2doc_0_0_1\modelio2doc\modelio2doc\test\img\35f4cdd0-95b1-437f-8d1e-9a5c7c8f6fa3.png)
 
-ERROR -GET-
+*Figure 'ucd_top_Consumer'*
+
+#### Diagram 'ucd_top_Owner'
 
 
 
-name:type.name:type:name:type:name:type
+![](G:\devproj\github\modelio2doc_0_0_1\modelio2doc\modelio2doc\test\img\d4140dcb-d468-45d2-bee7-878711e7c521.png)
 
-wrong_token: 
+*Figure 'ucd_top_Owner'*
 
-​	wrong_token: 
+### Use Cases
 
-​	
+TBD
 
-​	wrong_token: 
+#### Use case 'TBD'
 
-​			wrong_token: 
+TBD
 
-​	wrong_token: 
+##### Activity 'TBD'
 
-​	
-
-wrong_token: 
+TBD

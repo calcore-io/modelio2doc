@@ -1,57 +1,53 @@
-# Some Level 1 heading
+# eTlaloc SW Architecture
 
-Some text
+[TOC]
 
-## Some level 2 heading ${set-location>>n}
+## Use Case Analysis
 
-Some more text. Some attached image below.
+### Actors
 
-${set-location:package.name:UseCase:ucd_diagram}
+Figure below represents the relation among the different actors participating in the eTlaloc system. Table below provides a description for each of them.
 
-${img:type:location:elementName} diagram, type, name
+${set-location>>etlaloc_sya/pkg_SYA/SYA_UseCases/ucd_actors}${get.image} 
 
-${txt>>:type:location:elementName} type: name, description
+*Figure '${get.name}'*
 
-Description: ${get.desc>>etlaloc_sya/pkg_SYA/SYA_UseCases/ucd_actors}
+${set-location>>etlaloc_sya/pkg_SYA/SYA_UseCases}
 
-${get.image>>etlaloc_sya/pkg_SYA/SYA_UseCases/ucd_actors}
+| Actor name              | Description             |
+| ----------------------- | ----------------------- |
+| ${get.name>>Master}     | ${get.desc>>Master}     |
+| ${get.name>>Developer}  | ${get.desc>>Developer}  |
+| ${get.name>>Technician} | ${get.desc>>Technician} |
+| ${get.name>>Owner}      | ${get.desc>>Owner}      |
+|                         |                         |
 
-Figure "${get.name>>etlaloc_sya/pkg_SYA/SYA_UseCases/ucd_actors}"
+### Use Case Diagrams
 
+#### Diagram '${get.name>>ucd_top_Consumer}'
 
+${get.desc>>ucd_top_Consumer}
 
--------------------------
+${get.image>>ucd_top_Consumer}
 
-sjj
+*Figure '${get.name>>ucd_top_Consumer}'*
 
-${set-location>>etlaloc_sya/pkg_SYA/SYA_UseCases/ucd_actors}  
+#### Diagram '${get.name>>ucd_top_Owner}'
 
-${get.image}
+${get.desc>>ucd_top_Owner}
 
-${get.desc}
+${get.image>>ucd_top_Owner}
 
-${get.desc}
+*Figure '${get.name>>ucd_top_Owner}'*
 
-${clear-location}
+### Use Cases
 
-${get.desc}
+TBD
 
+#### Use case 'TBD'
 
+TBD
 
-name:type.name:type:name:type:name:type
+##### Activity 'TBD'
 
-${for:type==>element}
-
-​	${get:element:field}
-
-​	
-
-​	${for:type==>nested_element}
-
-​			${get:nested_element:field}
-
-​	${end-for}
-
-​	
-
-${end-for}
+TBD
