@@ -21,7 +21,7 @@ import sys
 import os
 import pathlib as pl
 import lxml.etree as ET
-import anytree as at
+import logging
 
 from argparse import ArgumentParser
 from argparse import RawDescriptionHelpFormatter
@@ -108,18 +108,23 @@ def main(argv=None): # IGNORE:C0111
     program_version_message = '%%(prog)s %s (%s)' % (program_version, program_build_date)
     program_shortdesc = __import__('__main__').__doc__.split("\n")[1]
     program_license = '''%s
+Copyright (C) 2022  Carlos Calvillo
+  
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation, either version 3 of the License, or
+  (at your option) any later version.
+ 
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.  
 
-  Created by user_name on %s.
-  Copyright 2022 organization_name. All rights reserved.
-
-  Licensed under the Apache License 2.0
-  http://www.apache.org/licenses/LICENSE-2.0
-
-  Distributed on an "AS IS" basis without warranties
-  or conditions of any kind, either express or implied.
+  You should have received a copy of the GNU General Public License
+  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 USAGE
-''' % (program_shortdesc, str(__date__))
+''' % program_shortdesc
 
     try:
         # Setup argument parser
@@ -158,6 +163,9 @@ USAGE
 #                 print("Recursive mode off")
                 
         # ------- Dynamic imports
+        #logging.basicConfig(level=logging.DEBUG)
+        
+        
         modelio2doc_path = pl.Path(__file__).parent.absolute()
         try:
             import modelio2doc.model as mdl
@@ -190,6 +198,36 @@ USAGE
             print("ERROR: Input template file not found.")
             return 2
         
+        # Check provided output path/file
+        if output is None:
+            # User didn't provide an output. Use same path as input and same file name but
+            # with an "out_" suffix.
+            # Assume same output path as the input template
+            output_full_file = template_file.with_name('out_'+template_file.name)
+        else:
+            # Check if provided argument is a file or a folder..
+            output_path = string_to_path(output)
+            if output_path.suffix != "":
+                # Provided path seems like a file.
+                output_full_file = output_path
+            else: 
+                # Provided argument seems like a folder. Check if it exists.
+                if folder_exists(output_path):
+                    # Provided argument is a folder. For file name use the same as the input
+                    # file but with an "out_" suffix.
+                    output_file = template_file.with_name('out_'+template_file.name)
+                    output_file = output_file.name
+                    output_full_file = output_path / output_file
+                else:
+                    # Invalid folder
+                    logging.error("Provided output path not found.")
+                    return 2
+        
+        # Output file shall not be the same as the input file
+        if template_file == output_full_file:
+            logging.error("Output file shall not be the same as the Input Template file")
+            return 2
+        
         # Check modelio project path
         model_file = string_to_path(model_path)
         if not file_exists(model_file):
@@ -218,72 +256,12 @@ USAGE
             return 2
         
         # --------- Create Modelio Model Class
-        modelio_el = mdl.ModelElement()
-        modelio_attr = mdl.ElementAttr()
-        
-        
-        
         modelio_obj = mdl.Model()
-        modelio_obj.data_path = project_data_path
-        modelio_obj.load_standard_elements()
-        modelio_obj.load_project_uuid()
-        modelio_obj.build_model_tree()
+        modelio_obj.load(project_data_path)
         
-        modelio_obj.print_tree()
-        
-        print("")
-        print("")
-        print("")
-        
-        node = modelio_obj.get_element_by_path_str("Package:etlaloc_sya/Package:pkg_EEA")
-        
-        print(node)
-        
-#         for node in at.PreOrderIter(modelio_obj.model_tree_root, maxlevel=2):
-#             print(node.type,":",node.name)
-#         
-#         print("")
-#         print("")
-#         print("")
-#         
-#         for child in modelio_obj.model_tree_root.children:
-#             print(child.type+":"+child.name)
-#             for child2 in child.children:
-#                 print("    "+child2.type+":"+child2.name)
-        
-#          
-#         for node in at.LevelOrderIter(modelio_obj.model_tree_root,maxlevel=2):
-#             print(node.type,":",node.name)
-#             
-#             for node2 in at.LevelOrderIter(node,maxlevel=2):
-#                 print("    ",node2.type,":",node2.name)
+        mdparse = mdp.MdParse()
+        mdparse.generate(modelio_obj,template_file,output_full_file)
 
-        
-        
-        
-#         md_obj = mdp.MdFile()
-#         
-#         md_obj.load(template_file)
-#         md_obj.generate()
-
-
-        
-
-        
-        #print(modelio_obj.data_path)
-
-        
-        
-        
-        
-                
-
-#         if inpat and expat and inpat == expat:
-#             raise CLIError("include and exclude pattern are equal! Nothing will be processed.")
-# 
-#         for inpath in paths:
-#             ### do something with inpath ###
-#             print(inpath)
         return 0
     except KeyboardInterrupt:
         ### handle keyboard interrupt ###
@@ -301,9 +279,12 @@ if __name__ == "__main__":
 #         sys.argv.append("-h")
 #         sys.argv.append("-v")
 #         sys.argv.append("-r")
-        
         sys.argv.append("-t")
-        sys.argv.append("G:\\devproj\\github\\eTlatloc\\Software\\Architecture\\gen_swa\\SWA doc template\\eTlaloc - SWA.md")
+        sys.argv.append("G:\\devproj\\github\\modelio2doc_0_0_1\\modelio2doc\\modelio2doc\\test\\eTlaloc - SWA.md")
+        
+        #sys.argv.append("-o")
+        #sys.argv.append("G:\\devproj\\github\\modelio2doc_0_0_1\\modelio2doc\\modelio2doc\\test\\jejeje_eTlaloc - SWA.md")
+        #sys.argv.append("G:\\devproj\\github\\modelio2doc_0_0_1\\modelio2doc")
         
         sys.argv.append("-mod_path")
         sys.argv.append("G:\\devproj\\github\\eTlatloc\\Software\\modelio_ws\\eTlaloc_SYA\\project.conf")
